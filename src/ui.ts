@@ -1,4 +1,4 @@
-import { Actor, Color, Scene, Vector, vec } from "excalibur";
+import { Actor, Color, Logger, Scene, ScreenElement, Vector, vec } from "excalibur";
 import { IdleAnimation } from "./resources";
 
 export const calculateExPixelConversion = (screen: ex.Screen) => {
@@ -11,6 +11,7 @@ export const calculateExPixelConversion = (screen: ex.Screen) => {
 export class Menu {
     rootElement: HTMLElement;
     addUnitButton: HTMLElement;
+    addScreenUnitButton: HTMLElement;
     removeUnitButton: HTMLElement;
     currentWorldPos: Vector = vec(0, 0);
     constructor(public scene: Scene) {
@@ -23,15 +24,21 @@ export class Menu {
 
         const rootElement = document.getElementById('menu');
         const addUnitButton = document.getElementById('add-unit');
+        const addScreenUnitButton = document.getElementById("add-screen-unit");
         const removeUnitButton = document.getElementById('remove-unit');
 
-        if (rootElement && addUnitButton && removeUnitButton) {
+        if (rootElement && addUnitButton && addScreenUnitButton && removeUnitButton) {
             this.rootElement = rootElement;
             this.addUnitButton = addUnitButton;
+            this.addScreenUnitButton = addScreenUnitButton;
             this.removeUnitButton = removeUnitButton;
 
             this.addUnitButton.addEventListener('click', evt => {
                 this.addUnit();
+            });
+
+            this.addScreenUnitButton.addEventListener("click", (evt) => {
+                this.addScreenUnit();
             });
 
             this.removeUnitButton.addEventListener('click', evt => {
@@ -45,9 +52,26 @@ export class Menu {
     addUnit() {
         const actor = new Actor({
             pos: this.currentWorldPos,
+            height: 64,
+            width: 64,
             scale: vec(2, 2),
             color: Color.Red
         });
+        Logger.getInstance().info(`The new unit's width is ${actor.width}`);
+        actor.graphics.use(IdleAnimation);
+        this.scene.add(actor);
+        this.hide();
+    }
+
+    addScreenUnit() {
+        const actor = new ScreenElement({
+            pos: this.currentWorldPos,
+            height: 64,
+            width: 64,
+            scale: vec(2, 2),
+            color: Color.Red,
+        });
+        Logger.getInstance().info(`The new screen unit's width is ${actor.width}`);
         actor.graphics.use(IdleAnimation);
         this.scene.add(actor);
         this.hide();
